@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Арт-пространство</string>
+    <string name="previous">Предыдущий</string>
+    <string name="next">Следующий</string>
+
+    <!-- Artwork 1 -->
+    <string name="art1_title">Звёздная ночь</string>
+    <string name="art1_artist">Винсент Ван Гог</string>
+    <string name="art1_year">1889</string>
+
+    <!-- Artwork 2 -->
+    <string name="art2_title">Мона Лиза</string>
+    <string name="art2_artist">Леонардо да Винчи</string>
+    <string name="art2_year">1503</string>
+
+    <!-- Artwork 3 -->
+    <string name="art3_title">Постоянство памяти</string>
+    <string name="art3_artist">Сальвадор Дали</string>
+    <string name="art3_year">1931</string>
+</resources>
