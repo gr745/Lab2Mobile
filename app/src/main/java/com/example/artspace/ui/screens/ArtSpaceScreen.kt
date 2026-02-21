@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -21,54 +22,19 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.example.artspace.data.ArtworkDataSource
 import com.example.artspace.model.Artwork
 import com.example.artspace.R
 import com.example.artspace.ui.theme.ArtSpaceTheme
-
-@Composable
-fun ArtSpaceScreen() {
-    // rememberSaveable - сохраняет состояние при повороте экрана (важно для задания!)
-    var currentIndex by rememberSaveable { mutableStateOf(0) }
-    val artworks = ArtworkDataSource.artworks
-    val currentArtwork = artworks[currentIndex]
-
-    // Определяем ориентацию для адаптивного макета
-    val configuration = LocalConfiguration.current
-    val isLandscape = configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
-
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
-    ) {
-        if (isLandscape) {
-            // Ландшафтная ориентация - горизонтальное расположение
-            LandscapeLayout(
-                currentArtwork = currentArtwork,
-                currentIndex = currentIndex,
-                totalArtworks = artworks.size,
-                onPreviousClicked = { if (currentIndex > 0) currentIndex-- },
-                onNextClicked = { if (currentIndex < artworks.size - 1) currentIndex++ }
-            )
-        } else {
-            // Портретная ориентация - вертикальное расположение
-            PortraitLayout(
-                currentArtwork = currentArtwork,
-                currentIndex = currentIndex,
-                totalArtworks = artworks.size,
-                onPreviousClicked = { if (currentIndex > 0) currentIndex-- },
-                onNextClicked = { if (currentIndex < artworks.size - 1) currentIndex++ }
-            )
-        }
-    }
-}
+import com.example.artspace.ui.theme.Dimens
 
 @Composable
 fun PortraitLayout(
@@ -78,30 +44,31 @@ fun PortraitLayout(
     onPreviousClicked: () -> Unit,
     onNextClicked: () -> Unit
 ) {
+    val paddingMedium = Dimens.paddingScreenMedium()
+    val spaceImageToInfo = Dimens.spaceImageToInfo()
+    val spaceInfoToButtons = Dimens.spaceInfoToButtons()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(paddingMedium),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
-        // Изображение (занимает 60% экрана)
         ArtworkImage(
             artwork = currentArtwork,
             modifier = Modifier.weight(0.6f)
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(spaceImageToInfo))
 
-        // Информация об искусстве
         ArtworkInfo(
             artwork = currentArtwork,
             modifier = Modifier.weight(0.2f)
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(spaceInfoToButtons))
 
-        // Кнопки навигации
         NavigationButtons(
             currentIndex = currentIndex,
             totalArtworks = totalArtworks,
@@ -120,22 +87,24 @@ fun LandscapeLayout(
     onPreviousClicked: () -> Unit,
     onNextClicked: () -> Unit
 ) {
+    val paddingMedium = Dimens.paddingScreenMedium()
+    val spaceImageToText = Dimens.spaceImageToInfo()
+
     Row(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(paddingMedium),
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Изображение слева (50% экрана)
         ArtworkImage(
             artwork = currentArtwork,
             modifier = Modifier.weight(0.5f)
         )
 
-        Spacer(modifier = Modifier.width(16.dp))
 
-        // Правая колонка с информацией и кнопками
+        Spacer(modifier = Modifier.width(spaceImageToText))
+
         Column(
             modifier = Modifier.weight(0.5f),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -143,7 +112,7 @@ fun LandscapeLayout(
         ) {
             ArtworkInfo(artwork = currentArtwork)
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(Dimens.buttonHeight()))
 
             NavigationButtons(
                 currentIndex = currentIndex,
@@ -160,18 +129,18 @@ fun ArtworkImage(
     artwork: Artwork,
     modifier: Modifier = Modifier
 ) {
-    // Получаем описание ДО передачи в semantics
     val imageDescription = stringResource(artwork.titleResId)
+    val cornerRadius = Dimens.imageCornerRadius()
+    val imagePadding = Dimens.imagePadding()
 
     Image(
         painter = painterResource(id = artwork.imageResId),
-        contentDescription = imageDescription, // Для accessibility
+        contentDescription = imageDescription,
         modifier = modifier
             .fillMaxWidth()
-            .padding(8.dp)
-            .semantics {
-                contentDescription = imageDescription // Используем сохраненное значение
-            }
+            .height(Dimens.getAdaptiveImageHeight())
+            .padding(imagePadding)
+            .clip(RoundedCornerShape(cornerRadius))
     )
 }
 
@@ -180,21 +149,42 @@ fun ArtworkInfo(
     artwork: Artwork,
     modifier: Modifier = Modifier
 ) {
+    val paddingMedium = Dimens.paddingScreenMedium()
+    val spaceInfoLines = Dimens.spaceInfoLines()
+    val textSizeTitle = Dimens.textSizeTitle()
+    val textSizeArtist = Dimens.textSizeArtist()
+    val textSizeYear = Dimens.textSizeYear()
+
     Column(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(paddingMedium),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = stringResource(id = artwork.titleResId),
-            style = MaterialTheme.typography.headlineMedium
+            style = MaterialTheme.typography.headlineMedium,
+            fontSize = textSizeTitle,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
         )
+
+        Spacer(modifier = Modifier.height(spaceInfoLines))
+
         Text(
             text = stringResource(id = artwork.artistResId),
-            style = MaterialTheme.typography.titleMedium
+            style = MaterialTheme.typography.titleMedium,
+            fontSize = textSizeArtist,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
+
+        Spacer(modifier = Modifier.height(spaceInfoLines / 2))
+
         Text(
             text = stringResource(id = artwork.yearResId),
-            style = MaterialTheme.typography.bodyLarge
+            style = MaterialTheme.typography.bodyLarge,
+            fontSize = textSizeYear
         )
     }
 }
@@ -207,32 +197,90 @@ fun NavigationButtons(
     onNextClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val buttonHeight = Dimens.buttonHeight()
+    val buttonWidth = Dimens.buttonWidth()
+    val buttonCornerRadius = Dimens.buttonCornerRadius()
+    val buttonSpacing = Dimens.spaceButtonsHorizontal()
+    val buttonTextSize = Dimens.buttonTextSize()
+    val paddingMedium = Dimens.paddingScreenMedium()
+
     Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceEvenly
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = paddingMedium),
+        horizontalArrangement = Arrangement.Center
     ) {
         Button(
             onClick = onPreviousClicked,
-            enabled = currentIndex > 0, // Делаем неактивной для первого
+            enabled = currentIndex > 0,
             modifier = Modifier
-                .weight(0.4f)
+                .width(buttonWidth)
+                .height(buttonHeight)
                 .semantics {
-                    contentDescription = "Navigate to previous artwork"
-                }
+                    contentDescription = "Previous button"
+                },
+            shape = RoundedCornerShape(buttonCornerRadius)
         ) {
-            Text(stringResource(id = R.string.previous))
+            Text(
+                text = stringResource(id = R.string.previous),
+                fontSize = buttonTextSize,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
         }
+
+        Spacer(modifier = Modifier.width(buttonSpacing))
 
         Button(
             onClick = onNextClicked,
-            enabled = currentIndex < totalArtworks - 1, // Делаем неактивной для последнего
+            enabled = currentIndex < totalArtworks - 1,
             modifier = Modifier
-                .weight(0.4f)
+                .width(buttonWidth)
+                .height(buttonHeight)
                 .semantics {
-                    contentDescription = "Navigate to next artwork"
-                }
+                    contentDescription = "Next button"
+                },
+            shape = RoundedCornerShape(buttonCornerRadius)
         ) {
-            Text(stringResource(id = R.string.next))
+            Text(
+                text = stringResource(id = R.string.next),
+                fontSize = buttonTextSize,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+    }
+}
+
+@Composable
+fun ArtSpaceScreen() {
+    var currentIndex by rememberSaveable { mutableStateOf(0) }
+    val artworks = ArtworkDataSource.artworks
+    val currentArtwork = artworks[currentIndex]
+
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
+
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
+    ) {
+        if (isLandscape) {
+            LandscapeLayout(
+                currentArtwork = currentArtwork,
+                currentIndex = currentIndex,
+                totalArtworks = artworks.size,
+                onPreviousClicked = { if (currentIndex > 0) currentIndex-- },
+                onNextClicked = { if (currentIndex < artworks.size - 1) currentIndex++ }
+            )
+        } else {
+            PortraitLayout(
+                currentArtwork = currentArtwork,
+                currentIndex = currentIndex,
+                totalArtworks = artworks.size,
+                onPreviousClicked = { if (currentIndex > 0) currentIndex-- },
+                onNextClicked = { if (currentIndex < artworks.size - 1) currentIndex++ }
+            )
         }
     }
 }

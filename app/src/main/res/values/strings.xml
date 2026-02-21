@@ -4,8 +4,8 @@
     <string name="next">Next</string>
 
     <!-- Artwork 1 -->
-    <string name="art1_title">Starry Night</string>
-    <string name="art1_artist">Vincent van Gogh</string>
+    <string name="art1_title">The girl with the headscarf</string>
+    <string name="art1_artist">Alexei Venecianov</string>
     <string name="art1_year">1889</string>
 
     <!-- Artwork 2 -->
@@ -14,7 +14,7 @@
     <string name="art2_year">1503</string>
 
     <!-- Artwork 3 -->
-    <string name="art3_title">The Persistence of Memory</string>
-    <string name="art3_artist">Salvador Dalí</string>
-    <string name="art3_year">1931</string>
+    <string name="art3_title">The lady with the ermine</string>
+    <string name="art3_artist">Leonardo da Vinci</string>
+    <string name="art3_year">1499</string>
 </resources>
