@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="padding_screen_medium">8dp</dimen>
+
+    <dimen name="space_image_to_info">1dp</dimen>
+
+    <dimen name="space_info_to_buttons">8dp</dimen>
+
+    <dimen name="space_buttons_horizontal">3dp</dimen>
+
+    <dimen name="space_info_lines">4dp</dimen>
+
+    <dimen name="image_corner_radius">12dp</dimen>
+    <dimen name="image_padding">4dp</dimen>
+
+    <dimen name="button_height">20dp</dimen>
+    <dimen name="button_width">60dp</dimen>
+    <dimen name="button_corner_radius">8dp</dimen>
+    <dimen name="button_text_size">6sp</dimen>
+
+    <dimen name="text_size_title">12sp</dimen>
+    <dimen name="text_size_artist">8sp</dimen>
+    <dimen name="text_size_year">8sp</dimen>
+</resources>
